@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<head>
+<title>The Title</title>
+<style>
+.links line {
+  stroke: #999;
+  stroke-opacity: 0.6;
+}
+.bar {
+  fill: steelblue;
+}
+div.tooltip {
+    position: absolute;
+    text-align: center;
+    padding: 5px 5px;
+    font: 12px sans-serif;
+    background: lightsteelblue;
+    border: 0px;
+    border-radius: 5px;
+    pointer-events: none;
+}
+html,body{
+  width: 100%;
+  height: 100%;
+  position: relative;
+  margin:0;
+  padding: 0;
+}
+*{
+  box-sizing: border-box;
+}
+svg{
+  position: absolute;
+  left: 0;
+  width: 78%;
+  height: 100%;
+  top: 0;
+}
+h1{
+  text-align: center;
+}
+.innerControlWrap{
+  margin: 0 auto;
+  width: 90%;
+}
+.bottom{
+  position: absolute;
+  text-align: center;
+  bottom: 0;
+  padding: 10px
+}
+.controls{
+  width: 22%;
+  height: 100%;
+  position: absolute;
+  right: 0;
+  top: 0;
+  border-left: 1px solid #333;
+}
+</style>
+</head>
+<body>
+<svg width="80%" height="100%"></svg>
+<div class="controls">
+<h1>{{netTitle}}</h1>
+<div class="innerControlWrap">
+<label for="colour">Colour Nodes By: </label>
+<select name="colour" id="colour">
+{{#nodeAttrs}}
+  <option value="{{attr}}">{{attr}}</option>
+{{/nodeAttrs}}
+</select>
+
+<label for="colourScheme">Colour Scheme: </label>
+<select name="colourScheme" id="colourScheme">
+  <option value="discrete">Discrete</option>
+  <option value="continuous">Continuous</option>
+</select>
+
+</div>
+<div class="innerControlWrap bottom">
+SHIFT + DRAG : Pan <br/>
+SCROLL WHEEL : Zoom <br/>
+</div>
+</div>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="./index.js"></script>
+</body>
+</html>
