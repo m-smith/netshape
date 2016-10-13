@@ -11,13 +11,15 @@ import json
 import shutil
 import os
 
+path = os.path.abspath(__file__)
+DIR_PREFIX = os.path.dirname(path)
 class Netshape(object):
     """docstring for Netshape"""
-    def __init__(self, dat, sep=","):
+    def __init__(self, path, sep=","):
         super(Netshape, self).__init__()
         # Maybe you can input source and target
-        self.datPath = dat
-        with open(dat,'r') as f:
+        self.datPath = path
+        with open(path,'r') as f:
             reader = csv.reader(f, delimiter=sep)
             reader = list(reader)
             try:
@@ -68,7 +70,7 @@ class Netshape(object):
 
 
     def _build(self, path, mapping):
-        with open('./tpl/' + path, 'r') as sourceFile:
+        with open(DIR_PREFIX + '/tpl/' + path, 'r') as sourceFile:
             tpl = sourceFile.read()
             out = pystache.render(tpl, mapping)
         with open('./dist/' + path,'w') as distFile:
