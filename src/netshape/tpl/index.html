@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <head>
-<title>The Title</title>
+<title>{{netTitle}} powered by Netshape</title>
 <style>
 .links line {
   stroke: #999;
@@ -66,6 +66,7 @@ h1{
 <div class="innerControlWrap">
 <label for="colour">Colour Nodes By: </label>
 <select name="colour" id="colour">
+<option disabled selected value> -- select a property -- </option>
 {{#nodeAttrs}}
   <option value="{{attr}}">{{attr}}</option>
 {{/nodeAttrs}}
@@ -73,8 +74,9 @@ h1{
 
 <label for="colourScheme">Colour Scheme: </label>
 <select name="colourScheme" id="colourScheme">
+  <option disabled value> -- select a colour scheme -- </option>
   <option value="discrete">Discrete</option>
-  <option value="continuous">Continuous</option>
+  <option selected value="continuous">Continuous</option>
 </select>
 
 </div>

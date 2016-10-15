@@ -1,113 +1,136 @@
-# Non-Default Imports
-import networkx as nx
-import community
-from networkx.readwrite import json_graph
-import numpy as np
-import pystache
-
-# Default Imports
+"""The main netshape module"""
 import csv
 import json
 import shutil
 import os
+import sys
 
-path = os.path.abspath(__file__)
-DIR_PREFIX = os.path.dirname(path)
+import networkx as nx
+import community
+import numpy as np
+import pystache
+
+PATH = os.path.abspath(__file__)
+DIR_PREFIX = os.path.dirname(PATH)
+
 class Netshape(object):
     """docstring for Netshape"""
     def __init__(self, path, sep=","):
         super(Netshape, self).__init__()
         # Maybe you can input source and target
-        self.datPath = path
-        with open(path,'r') as f:
-            reader = csv.reader(f, delimiter=sep)
+        try:
+            reader = csv.reader(path, delimiter=sep)
             reader = list(reader)
             try:
-                source,target = [list(map(lambda x : x.lower(), reader[0])).index(i) for i in ['source','target']]
+                source, target = [list(map(lambda x: x.lower(), reader[0])).index(i)
+                                  for i in ['source', 'target']]
                 header = reader.pop(0)
-                otherVals = [header.index(i) for i in header if i.lower() not in ['source','target']]
-                otherHeads= [i for i in header if i.lower() not in ['source','target']]
+                other_vals = [header.index(i) for i in header
+                              if i.lower() not in ['source', 'target']]
+                other_heads = [i for i in header if i.lower() not in ['source', 'target']]
             except ValueError:
                 source = 0
                 target = 1
 
-            edges = [dict([('source',str(i[source])),
-                 ('target',str(i[target]))] +
-                 list(zip(otherHeads, [i[j] for j in otherVals]))) for i in reader]
-            nodes = np.unique([(i[source],i[target]) for i in reader])
+            edges = [dict([('source', str(i[source])), ('target', str(i[target]))]
+                          + list(zip(other_heads, [i[j] for j in other_vals]))) for i in reader]
+            nodes = np.unique([(i[source], i[target]) for i in reader])
             nodes = [{'id':i} for i in nodes]
-            self.JSONgraph = {'nodes': nodes, 'links':edges}
-            self.nodeProps = []
-            self.edgeProps = otherHeads
-            self.generate_graph().add_eigenvector_centrality().add_community().add_degree()
-            self.build_visualization()
+            self.json_graph = {'nodes': nodes, 'links':edges}
+            self.node_props = []
+            self.edge_props = other_heads
+            self.g = None
+        finally:
+            path.close()
 
-    def generate_graph(self,dir=True):
-        if dir:
-            cu = nx.DiGraph()
+    def generate_graph(self, directed=True):
+        """Builds a networkx graph from the provided edgelies"""
+        if directed:
+            graph = nx.DiGraph()
         else:
-            cu = None
-        nx.parse_edgelist([i["source"] + "," + i["target"] for i in self.JSONgraph["links"]], delimiter=",", nodetype=str, create_using=cu)
-        self.g = cu
+            graph = None
+        nx.parse_edgelist([i["source"] + "," + i["target"] for i in self.json_graph["links"]],
+                          delimiter=",", nodetype=str, create_using=graph)
+        self.g = graph
         return self
 
-    def build_visualization(self,title="Network"):
+    def write_node_props(self, proplist, sep=",", file=False, header=True):
+        """Writes csv formatted node property list
+        Positional arguments:
+        proplist -- the list of attribute names to write
+
+        Keyword arguments:
+        sep    -- the separator string between csv values (default ",")
+        file   -- the file to write to, or False for stdout (default False)
+        header -- true if a header row should be output, false otherwise
+        """
+        try:
+            f = open(file, 'w') if file else sys.stdout
+            if header:
+                f.write(sep.join([str(i) for i in proplist]) + "\n")
+            for node in self.json_graph["nodes"]:
+                f.write(sep.join([str(node[i]) for i in proplist]) + "\n")
+        finally:
+            if f is not sys.stdout:
+                f.close()
+
+    def build_visualization(self, title="Network"):
+        """Scaffolds the visualization project into a directory named dist"""
         try:
             shutil.rmtree('dist')
         except FileNotFoundError:
             pass
         os.makedirs("./dist/data")
-        datapath = os.path.splitext(os.path.basename(self.datPath))[0] + ".json"
-        self._build('index.html', {
+        datapath = "data" + ".json"
+        _build('index.html', {
             'netTitle': title,
-            'nodeAttrs':[{'attr' : i} for i in self.nodeProps]
+            'nodeAttrs':[{'attr' : i} for i in self.node_props]
         })
-        self._build('index.js', {'datapath': datapath})
+        _build('index.js', {'datapath': datapath})
 
         with open("./dist/data/" + datapath, 'w') as f:
-            json.dump(self.JSONgraph, f)
+            json.dump(self.json_graph, f)
 
+    def add_node_prop(self, prop, prop_map):
+        """Adds a node property to the json_graph
 
-
-    def _build(self, path, mapping):
-        with open(DIR_PREFIX + '/tpl/' + path, 'r') as sourceFile:
-            tpl = sourceFile.read()
-            out = pystache.render(tpl, mapping)
-        with open('./dist/' + path,'w') as distFile:
-            distFile.write(out)
-
-
-    def _add_prop(self, prop, propMap):
-        # parameter for writing to file
-        self.nodeProps.append(prop)
-        for i in range(len(self.JSONgraph["nodes"])):
-            self.JSONgraph["nodes"][i][prop] = propMap[self.JSONgraph["nodes"][i]["id"]]
+        Positional arguments:
+        prop     -- the name of the property to add
+        prop_map -- a map from nodes to the property being added
+        """
+        self.node_props.append(prop)
+        for i in range(len(self.json_graph["nodes"])):
+            self.json_graph["nodes"][i][prop] = prop_map[self.json_graph["nodes"][i]["id"]]
 
 
     def add_eigenvector_centrality(self):
+        """Hardcoded centrality"""
         centrality = nx.eigenvector_centrality(self.g)
-        self._add_prop('Eigenvalue Centrality', centrality)
+        self.add_node_prop('Eigenvalue Centrality', centrality)
         return self
 
     def add_community(self):
+        """Hardcoded community detection"""
         comms = community.best_partition(nx.Graph(self.g))
-        self._add_prop('Community', comms)
+        self.add_node_prop('Community', comms)
         return self
 
     def add_degree(self):
+        """Hardcoded degree"""
         try:
             in_degree = dict(self.g.in_degree_iter())
-            self._add_prop('In Degree', in_degree)
+            self.add_node_prop('In Degree', in_degree)
             out_degree = dict(self.g.out_degree_iter())
-            self._add_prop('Out Degree', out_degree)
+            self.add_node_prop('Out Degree', out_degree)
         except nx.NetworkXException:
             pass
         degree = dict(self.g.degree_iter())
-        self._add_prop('Degree', degree)
+        self.add_node_prop('Degree', degree)
         return self
 
-
-
-if __name__ == '__main__':
-    a = Netshape('../../../../Data/Nematode/WormNet.csv')
-
+def _build(path, mapping):
+    with open(DIR_PREFIX + '/tpl/' + path, 'r') as source_file:
+        tpl = source_file.read()
+        out = pystache.render(tpl, mapping)
+    with open('./dist/' + path, 'w') as dist_file:
+        dist_file.write(out)
