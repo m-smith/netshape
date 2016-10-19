@@ -15,12 +15,29 @@ DIR_PREFIX = os.path.dirname(PATH)
 
 class Netshape(object):
     """docstring for Netshape"""
-    def __init__(self, path, sep=","):
+    def __init__(self):
         super(Netshape, self).__init__()
-        # Maybe you can input source and target
+        self.json_graph = {'nodes': [], 'links':[]}
+        self.node_props = []
+        self.edge_props = []
+        self.g = None
+
+    def from_edgelist(self, edgelist, sep=",", directed=True):
+        """Reads an csv formatted edgelist and adds nodes and edges to the
+           network accordingly.
+
+            Positional arguments:
+            edgelist -- the file to be opened
+
+            Keyword arguments:
+            sep -- the delimiter string in the csv (default: ",")
+            directed -- boolean indicating true if the graph is directed (default: True)
+        """
         try:
-            reader = csv.reader(path, delimiter=sep)
+            reader = csv.reader(edgelist, delimiter=sep)
             reader = list(reader)
+            other_vals = []
+            other_heads = []
             try:
                 source, target = [list(map(lambda x: x.lower(), reader[0])).index(i)
                                   for i in ['source', 'target']]
@@ -35,15 +52,18 @@ class Netshape(object):
             edges = [dict([('source', str(i[source])), ('target', str(i[target]))]
                           + list(zip(other_heads, [i[j] for j in other_vals]))) for i in reader]
             nodes = np.unique([(i[source], i[target]) for i in reader])
-            nodes = [{'id':i} for i in nodes]
-            self.json_graph = {'nodes': nodes, 'links':edges}
-            self.node_props = []
-            self.edge_props = other_heads
-            self.g = None
+            old_nodes = [self.json_graph["nodes"][i]["id"] for i in self.json_graph["nodes"]]
+            nodes = [{'id':i} for i in nodes if i not in old_nodes]
+            self.json_graph = {
+                'nodes': self.json_graph['nodes'] + nodes,
+                'links':edges}
+            self.node_props = self.node_props
+            self.edge_props = np.unique(self.edge_props + other_heads)
+            self._generate_graph(directed)
         finally:
-            path.close()
+            edgelist.close()
 
-    def generate_graph(self, directed=True):
+    def _generate_graph(self, directed=True):
         """Builds a networkx graph from the provided edgelies"""
         if directed:
             graph = nx.DiGraph()
@@ -74,13 +94,13 @@ class Netshape(object):
             if f is not sys.stdout:
                 f.close()
 
-    def build_visualization(self, title="Network"):
+    def build_visualization(self, out="dist", title="Network"):
         """Scaffolds the visualization project into a directory named dist"""
         try:
-            shutil.rmtree('dist')
+            shutil.rmtree(out)
         except FileNotFoundError:
             pass
-        os.makedirs("./dist/data")
+        os.makedirs("./"+ out +"/data")
         datapath = "data" + ".json"
         _build('index.html', {
             'netTitle': title,
@@ -88,7 +108,7 @@ class Netshape(object):
         })
         _build('index.js', {'datapath': datapath})
 
-        with open("./dist/data/" + datapath, 'w') as f:
+        with open("./"+ out +"/data/" + datapath, 'w') as f:
             json.dump(self.json_graph, f)
 
     def add_node_prop(self, prop, prop_map):
@@ -101,32 +121,6 @@ class Netshape(object):
         self.node_props.append(prop)
         for i in range(len(self.json_graph["nodes"])):
             self.json_graph["nodes"][i][prop] = prop_map[self.json_graph["nodes"][i]["id"]]
-
-
-    def add_eigenvector_centrality(self):
-        """Hardcoded centrality"""
-        centrality = nx.eigenvector_centrality(self.g)
-        self.add_node_prop('Eigenvalue Centrality', centrality)
-        return self
-
-    def add_community(self):
-        """Hardcoded community detection"""
-        comms = community.best_partition(nx.Graph(self.g))
-        self.add_node_prop('Community', comms)
-        return self
-
-    def add_degree(self):
-        """Hardcoded degree"""
-        try:
-            in_degree = dict(self.g.in_degree_iter())
-            self.add_node_prop('In Degree', in_degree)
-            out_degree = dict(self.g.out_degree_iter())
-            self.add_node_prop('Out Degree', out_degree)
-        except nx.NetworkXException:
-            pass
-        degree = dict(self.g.degree_iter())
-        self.add_node_prop('Degree', degree)
-        return self
 
 def _build(path, mapping):
     with open(DIR_PREFIX + '/tpl/' + path, 'r') as source_file:
