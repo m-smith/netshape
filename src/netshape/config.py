@@ -33,7 +33,6 @@ class Config(object):
         for i in command_args:
             if not i:
                 continue
-            print(i)
             name = i["name"]
             del i["name"]
             subparser.add_argument(*name, **i)

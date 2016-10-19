@@ -1,0 +1,212 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Configuration &#8212; Netshape 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="Netshape 0.1 documentation" href="index.html" />
+    <link rel="next" title="Python API" href="api.html" />
+    <link rel="prev" title="Introduction" href="introduction.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="configuration">
+<h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
+<p>In addition to the previously mentioned options, <code class="code docutils literal"><span class="pre">netshape</span></code> will
+optionally and automatically load a <code class="code docutils literal"><span class="pre">netshape_conf.py</span></code> file in the directory
+where netshape is being run. This file allows a user to write custom functions
+for computing network properties, add additional subcommands, or modify existing ones.</p>
+<div class="section" id="the-netshape-conf-py-file">
+<h2>The <code class="code docutils literal"><span class="pre">netshape_conf.py</span></code> file<a class="headerlink" href="#the-netshape-conf-py-file" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="code docutils literal"><span class="pre">netshape_conf.py</span></code> is simply a python module that is imported before
+the command line arguments are parsed. This allows this module to define additional
+command line arguments or change the meaning of existing ones before they are used
+to build the network visualization.</p>
+<div class="section" id="the-conf-object">
+<h3>The <code class="code docutils literal"><span class="pre">conf</span></code> object<a class="headerlink" href="#the-conf-object" title="Permalink to this headline">¶</a></h3>
+<p>Every <code class="code docutils literal"><span class="pre">netshape_conf.py</span></code> imports a global <code class="code docutils literal"><span class="pre">conf</span></code> object from
+the <code class="code docutils literal"><span class="pre">netshape.config</span></code> module that is shared across the <code class="code docutils literal"><span class="pre">netshape</span></code> application.
+<code class="code docutils literal"><span class="pre">conf</span></code> object maintains and exposes the configuration state using an internal dictionary of
+<code class="code docutils literal"><span class="pre">Command</span></code> objects, each of which represents a single subcommand of the application.
+This dictionary can be accessed as the <code class="code docutils literal"><span class="pre">commands</span></code> property of the <code class="code docutils literal"><span class="pre">conf</span></code> object.
+<code class="code docutils literal"><span class="pre">Command</span></code>&#8216;s are indexed by the name of the command itself (e.g. for <code class="code docutils literal"><span class="pre">netshape</span> <span class="pre">build</span></code>, it would be <code class="code docutils literal"><span class="pre">conf.commands[&quot;build&quot;]</span></code>).</p>
+<p>The <code class="code docutils literal"><span class="pre">conf</span></code> object also exposes a method to add commands to the application.
+This could be useful if a user wanted to make different visualizations of the same network,
+or required other side effects, like outputting node properties in csv format.
+This function is accessed via <code class="code docutils literal"><span class="pre">conf.register_command()</span></code>, and accepts a required <code class="code docutils literal"><span class="pre">command_name</span></code> argument, as well as optional <code class="code docutils literal"><span class="pre">help</span></code> which is a string representing the help message for that subcommand, and <code class="code docutils literal"><span class="pre">command_args</span></code>, a list of dicts of arguments to be passed to the <code class="code docutils literal"><span class="pre">argparse</span></code> module&#8217;s <code class="code docutils literal"><span class="pre">add_argument</span></code> function, as well as the additional &#8216;name&#8217; key, which specifies the list of possible names for that parameter.</p>
+<p>This enables us to build custom command line arguments which can be used gracefully
+in the network visualization pipeline.</p>
+</div>
+<div class="section" id="the-command-class">
+<h3>The <code class="code docutils literal"><span class="pre">Command</span></code> class<a class="headerlink" href="#the-command-class" title="Permalink to this headline">¶</a></h3>
+<p>The command class allows us to construct and modify visualization pipelines that
+serve a common purpose. Currently it is somewhat underdeveloped, and as such,
+only exposes two methods: <code class="code docutils literal"><span class="pre">Command.read_edges()</span></code>, which builds builds the original network or adds edges to an existing one. It accepts a single parameter, which is the name of the command line argument
+that was used to capture the edgelist file. The other method, :code:<a href="#id1"><span class="problematic" id="id2">`</span></a>Command.add_node_prop`() can be used to add a property to the network. It accepts a name for the property as it&#8217;s first argument,
+a function as it&#8217;s second argument, which has some restrictions on it&#8217;s arguments, and, additional args and kwargs to pass to that function when it is being called. The function must receive a netshape object as it&#8217;s first argument, the name of the property being added as the second, and a dictionary of command line arguments as the third argument. This function then can compute a network statistic, and call,</p>
+<blockquote>
+<div><code class="code docutils literal"><span class="pre">Netshape.add_node_prop()</span></code> to add it to the netshape object. These methods are added in order, and executed sequentially to compute all desired network statistics. Then, internal methods are used to
+build the directory for the web page.</div></blockquote>
+</div>
+<div class="section" id="a-sample-netshape-conf-py">
+<h3>A sample <code class="code docutils literal"><span class="pre">netshape_conf.py</span></code><a class="headerlink" href="#a-sample-netshape-conf-py" title="Permalink to this headline">¶</a></h3>
+<p>In order to reduce the potential confusion  of the above examples, we give an example of a <code class="code docutils literal"><span class="pre">netshape_conf.py</span></code> file which would result in the default commands. The <code class="code docutils literal"><span class="pre">node_props</span></code> module
+adds utility functions that compute various node properties of the network, according to the function
+format described above. For more details on specific functions, see the <a class="reference internal" href="api.html"><span class="doc">Full API</span></a></p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">from</span> <span class="nn">netshape.config</span> <span class="kn">import</span> <span class="n">conf</span>
+<span class="kn">from</span> <span class="nn">netshape</span> <span class="kn">import</span> <span class="n">node_props</span>
+
+<span class="p">(</span><span class="n">conf</span>
+ <span class="o">.</span><span class="n">register_command</span><span class="p">(</span><span class="s1">&#39;build&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;build a static visualization of a network&quot;</span><span class="p">,</span>
+                   <span class="n">command_args</span><span class="o">=</span><span class="n">build_args</span><span class="p">)</span>
+ <span class="o">.</span><span class="n">read_edges</span><span class="p">(</span><span class="s1">&#39;network&#39;</span><span class="p">)</span>
+ <span class="o">.</span><span class="n">add_node_prop</span><span class="p">(</span><span class="s1">&#39;Eigenvector Centrality&#39;</span><span class="p">,</span> <span class="n">node_props</span><span class="o">.</span><span class="n">eigenvector_centrality</span><span class="p">)</span>
+ <span class="o">.</span><span class="n">add_node_prop</span><span class="p">(</span><span class="s1">&#39;Community&#39;</span><span class="p">,</span> <span class="n">node_props</span><span class="o">.</span><span class="n">modularity_community</span><span class="p">)</span>
+ <span class="o">.</span><span class="n">add_node_prop</span><span class="p">(</span><span class="s1">&#39;Degree&#39;</span><span class="p">,</span> <span class="n">node_props</span><span class="o">.</span><span class="n">degree</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="p">(</span><span class="n">conf</span>
+ <span class="o">.</span><span class="n">register_command</span><span class="p">(</span><span class="s1">&#39;serve&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;utility function to view a network visualization&quot;</span><span class="p">,</span> <span class="n">command_args</span><span class="o">=</span><span class="p">[{</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;-p&#39;</span><span class="p">,</span> <span class="s1">&#39;--port&#39;</span><span class="p">],</span>
+        <span class="s2">&quot;dest&quot;</span><span class="p">:</span> <span class="s1">&#39;p&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;default&quot;</span><span class="p">:</span><span class="mi">8000</span><span class="p">,</span>
+        <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;The port to serve on.&quot;</span>
+  <span class="p">}])</span>
+ <span class="o">.</span><span class="n">add_node_prop</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">serve</span><span class="p">)</span>
+
+ <span class="n">build_args</span> <span class="o">=</span> <span class="p">[{</span>
+              <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;network&#39;</span><span class="p">],</span>
+              <span class="s1">&#39;nargs&#39;</span><span class="p">:</span> <span class="s2">&quot;?&quot;</span><span class="p">,</span>
+              <span class="s1">&#39;help&#39;</span><span class="p">:</span><span class="s2">&quot;the network, formatted as a csv edgelist - &quot;</span>
+                     <span class="s2">&quot;accepts a path or from stdin&quot;</span><span class="p">,</span>
+              <span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="n">argparse</span><span class="o">.</span><span class="n">FileType</span><span class="p">(</span><span class="s1">&#39;r&#39;</span><span class="p">),</span>
+              <span class="s2">&quot;default&quot;</span><span class="p">:</span><span class="n">sys</span><span class="o">.</span><span class="n">stdin</span>
+          <span class="p">},</span> <span class="p">{</span>
+              <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;-s&#39;</span><span class="p">,</span> <span class="s1">&#39;--seps&#39;</span><span class="p">],</span>
+              <span class="s2">&quot;dest&quot;</span><span class="p">:</span> <span class="s1">&#39;sep&#39;</span><span class="p">,</span>
+              <span class="s2">&quot;default&quot;</span><span class="p">:</span><span class="s2">&quot;,&quot;</span><span class="p">,</span>
+              <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;the string delimiter between values in the edgelist&quot;</span>
+                      <span class="s2">&quot; (default: </span><span class="se">\&quot;</span><span class="s2">,</span><span class="se">\&quot;</span><span class="s2">)&quot;</span>
+          <span class="p">},</span> <span class="p">{</span>
+              <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;-d&#39;</span><span class="p">,</span> <span class="s1">&#39;--directed&#39;</span><span class="p">],</span>
+              <span class="s2">&quot;dest&quot;</span><span class="p">:</span> <span class="s1">&#39;directed&#39;</span><span class="p">,</span>
+              <span class="s2">&quot;default&quot;</span><span class="p">:</span><span class="s2">&quot;True&quot;</span><span class="p">,</span>
+              <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Boolean indicator that is True if the network is directed, &quot;</span>
+                      <span class="s2">&quot;and False otherwise (default: True)&quot;</span>
+          <span class="p">},</span> <span class="p">{</span>
+              <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="s1">&#39;--out&#39;</span><span class="p">],</span>
+              <span class="s2">&quot;dest&quot;</span><span class="p">:</span> <span class="s1">&#39;out&#39;</span><span class="p">,</span>
+              <span class="s2">&quot;default&quot;</span><span class="p">:</span><span class="s2">&quot;dist&quot;</span><span class="p">,</span>
+              <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;The name of the file to build the web visualization in &quot;</span>
+                      <span class="s2">&quot;(default: </span><span class="se">\&quot;</span><span class="s2">dist</span><span class="se">\&quot;</span><span class="s2">)&quot;</span>
+          <span class="p">},</span> <span class="p">{</span>
+              <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;-n&#39;</span><span class="p">,</span> <span class="s1">&#39;--name&#39;</span><span class="p">],</span>
+              <span class="s2">&quot;dest&quot;</span><span class="p">:</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span>
+              <span class="s2">&quot;default&quot;</span><span class="p">:</span><span class="s2">&quot;Network&quot;</span><span class="p">,</span>
+              <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;The name of the file to build the web visualization in &quot;</span>
+                      <span class="s2">&quot;(default: </span><span class="se">\&quot;</span><span class="s2">Network</span><span class="se">\&quot;</span><span class="s2">)&quot;</span>
+          <span class="p">}]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Netshape</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#the-netshape-conf-py-file">The <code class="code docutils literal"><span class="pre">netshape_conf.py</span></code> file</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#the-conf-object">The <code class="code docutils literal"><span class="pre">conf</span></code> object</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-command-class">The <code class="code docutils literal"><span class="pre">Command</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#a-sample-netshape-conf-py">A sample <code class="code docutils literal"><span class="pre">netshape_conf.py</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">Python API</a></li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Matthew Smith.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.8</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/configuration.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Netshape &#8212; Netshape 0.1 documentation</title>
+    <title>Overview &#8212; Netshape 0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -26,6 +26,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="top" title="Netshape 0.1 documentation" href="#" />
+    <link rel="next" title="Introduction" href="introduction.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -41,13 +42,11 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="netshape">
-<h1>Netshape<a class="headerlink" href="#netshape" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="quickstart">
-<h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
-<p><code class="code docutils literal"><span class="pre">netshape</span></code> is a versatile tool designed to build interactive, browser-based,
+  <div class="section" id="overview">
+<h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
+<p><code class="code docutils literal"><span class="pre">netshape</span></code> is a versatile command-line tool designed to build interactive, browser-based,
 and deployable visualizations of networks. This enables a more collaborative and more informative visualization process.</p>
-<p>With <code class="code docutils literal"><span class="pre">netshape</span></code>, a network edgelist is turned into a web-ready interactive visualization with just one command:</p>
+<p>With <code class="code docutils literal"><span class="pre">netshape</span></code>, a network edgelist is turned into a web-ready interactive visualization with just one command, and we can view that visualization with just a few more:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>&gt; netshape build AwesomeNetwork.csv
 &gt; <span class="nb">cd</span> dist
 &gt; netshape server
@@ -56,19 +55,65 @@ and deployable visualizations of networks. This enables a more collaborative and
 </div>
 <p>Netshape is also highly configurable and hackable; it supports custom commands,
 which enables the development of complex visualization pipelines.</p>
+<div class="section" id="key-features">
+<h2>Key Features<a class="headerlink" href="#key-features" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><strong>Web-ready visualization:</strong></dt>
+<dd>Building and sharing visualizations of networks can help convey complex
+or technical properties of a network to non-technical users. <code class="code docutils literal"><span class="pre">netshape</span></code> enables
+the instantanious sharing of these visualizations.</dd>
+<dt><strong>Flexible configuration:</strong></dt>
+<dd><code class="code docutils literal"><span class="pre">netshape</span></code> commands are configured through a  <code class="code docutils literal"><span class="pre">netshape_conf.py</span></code>
+file, which is <em>just a python file</em>. This means that any normal python code
+can be included or imported in you visualization pipeline.</dd>
+</dl>
+</div>
 <div class="section" id="dependencies">
-<h3>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h3>
-<p>Before installing, ensure that python is installed on your computer.</p>
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<p>Before installing, ensure that python is installed on your computer, and is at
+least version 2.7.</p>
 </div>
 <div class="section" id="installation">
-<h3>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h3>
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>Once the dependencies have been installed, in order to install <code class="code docutils literal"><span class="pre">netshape</span></code>, simply run:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>&gt; git clone https://github.com/m-smith/netshape
 &gt; <span class="nb">cd</span> netshape
 &gt; make install
 </pre></div>
 </div>
+</div>
+<div class="section" id="contributing-testing">
+<h2>Contributing / Testing<a class="headerlink" href="#contributing-testing" title="Permalink to this headline">¶</a></h2>
+<p>Some rudimentary tests have been written, though many more could be made.
+Any contribution to this project is highly appreciated.</p>
+<p>In order to run the existing tests, just use: <code class="code docutils literal"><span class="pre">make</span> <span class="pre">test</span></code> from the project root</p>
+<div class="section" id="documentation">
+<h3>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h3>
 <div class="toctree-wrapper compound">
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#default-usage">Default Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#web-interface">Web Interface</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#the-netshape-conf-py-file">The <code class="code docutils literal"><span class="pre">netshape_conf.py</span></code> file</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="configuration.html#the-conf-object">The <code class="code docutils literal"><span class="pre">conf</span></code> object</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configuration.html#the-command-class">The <code class="code docutils literal"><span class="pre">Command</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configuration.html#a-sample-netshape-conf-py">A sample <code class="code docutils literal"><span class="pre">netshape_conf.py</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">Python API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-netshape.main"><code class="docutils literal"><span class="pre">netshape.main</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-netshape.config"><code class="docutils literal"><span class="pre">netshape.config</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#netshape-node-props"><code class="docutils literal"><span class="pre">netshape.node_props</span></code></a></li>
+</ul>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -80,31 +125,24 @@ which enables the development of complex visualization pipelines.</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="#">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Netshape</a><ul>
-<li><a class="reference internal" href="#quickstart">Quickstart</a><ul>
-<li><a class="reference internal" href="#dependencies">Dependencies</a></li>
-<li><a class="reference internal" href="#installation">Installation</a></li>
+<h1 class="logo"><a href="#">Netshape</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">Python API</a></li>
 </ul>
-</li>
-</ul>
-</li>
-</ul>
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="#">Documentation overview</a><ul>
-  </ul></li>
-</ul>
-</div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/index.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
+
+
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">

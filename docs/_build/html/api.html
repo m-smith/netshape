@@ -1,0 +1,250 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Python API &#8212; Netshape 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="Netshape 0.1 documentation" href="index.html" />
+    <link rel="prev" title="Configuration" href="configuration.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="python-api">
+<h1>Python API<a class="headerlink" href="#python-api" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-netshape.main">
+<span id="netshape-main"></span><h2><code class="docutils literal"><span class="pre">netshape.main</span></code><a class="headerlink" href="#module-netshape.main" title="Permalink to this headline">¶</a></h2>
+<p>The main netshape module which contains the Netshape graph representation
+class</p>
+<dl class="class">
+<dt id="netshape.main.Netshape">
+<em class="property">class </em><code class="descclassname">netshape.main.</code><code class="descname">Netshape</code><a class="headerlink" href="#netshape.main.Netshape" title="Permalink to this definition">¶</a></dt>
+<dd><p>The netshape class. Netshape objects maintain the network state through
+two primary attributes:</p>
+<dl class="docutils">
+<dt><code class="code docutils literal"><span class="pre">self.json_graph</span></code></dt>
+<dd><p class="first">The JSON representation of the graph, which maintains nodes and
+links as lists of dicts. This is what is eventually written to the
+data file used for the web UI.</p>
+<blockquote class="last">
+<div><code class="code docutils literal"><span class="pre">self.json_graph</span> <span class="pre">=</span> <span class="pre">{'nodes':</span> <span class="pre">[],</span> <span class="pre">'links':[]}</span></code></div></blockquote>
+</dd>
+<dt><code class="code docutils literal"><span class="pre">self.g</span></code></dt>
+<dd>a networkx representation of the network. This is useful for computation
+of network statistics.</dd>
+</dl>
+<dl class="method">
+<dt id="netshape.main.Netshape.add_node_prop">
+<code class="descname">add_node_prop</code><span class="sig-paren">(</span><em>prop</em>, <em>prop_map</em><span class="sig-paren">)</span><a class="headerlink" href="#netshape.main.Netshape.add_node_prop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a node property to the json_graph
+<em>Positional arguments:</em></p>
+<blockquote>
+<div><dl class="option">
+<dt id="cmdoption-arg-prop">
+<code class="descname">prop</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-arg-prop" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the property to add</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-arg-prop_map">
+<code class="descname">prop_map</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-arg-prop_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>A mapping from node ID&#8217;s to property values</p>
+</dd></dl>
+
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="netshape.main.Netshape.build_visualization">
+<code class="descname">build_visualization</code><span class="sig-paren">(</span><em>out='dist'</em>, <em>title='Network'</em><span class="sig-paren">)</span><a class="headerlink" href="#netshape.main.Netshape.build_visualization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scaffolds the visualization project into a directory named dist</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="netshape.main.Netshape.from_edgelist">
+<code class="descname">from_edgelist</code><span class="sig-paren">(</span><em>edgelist</em>, <em>sep='</em>, <em>'</em>, <em>directed=True</em><span class="sig-paren">)</span><a class="headerlink" href="#netshape.main.Netshape.from_edgelist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads a csv formatted edgelist and adds nodes and edges to the
+network accordingly. If there is a header, the columns labeled &#8216;source&#8217;,
+and &#8216;target&#8217; will be used as node ID&#8217;s, and any other columns, edge attributes.
+Otherwise, the first two columns will be used as node ID&#8217;s.</p>
+<dl class="docutils">
+<dt><em>Positional arguments:</em></dt>
+<dd><dl class="first last option">
+<dt id="cmdoption-arg-edgelist">
+<code class="descname">edgelist</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-arg-edgelist" title="Permalink to this definition">¶</a></dt>
+<dd><p>the file to be opened</p>
+</dd></dl>
+
+</dd>
+</dl>
+<p><em>Keyword arguments:</em></p>
+<blockquote>
+<div><dl class="option">
+<dt id="cmdoption-arg-sep">
+<code class="descname">sep</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-arg-sep" title="Permalink to this definition">¶</a></dt>
+<dd><p>the delimiter string in the csv (default: &#8221; , &#8221;)</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-arg-directed">
+<code class="descname">directed</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-arg-directed" title="Permalink to this definition">¶</a></dt>
+<dd><p>boolean indicating true if the graph is directed (default: True)</p>
+</dd></dl>
+
+</div></blockquote>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-netshape.config">
+<span id="netshape-config"></span><h2><code class="docutils literal"><span class="pre">netshape.config</span></code><a class="headerlink" href="#module-netshape.config" title="Permalink to this headline">¶</a></h2>
+<p>Module for writing netshape-config.py files</p>
+<dl class="class">
+<dt id="netshape.config.Command">
+<em class="property">class </em><code class="descclassname">netshape.config.</code><code class="descname">Command</code><a class="headerlink" href="#netshape.config.Command" title="Permalink to this definition">¶</a></dt>
+<dd><p>docstring for Command</p>
+<dl class="method">
+<dt id="netshape.config.Command.add_node_prop">
+<code class="descname">add_node_prop</code><span class="sig-paren">(</span><em>name</em>, <em>func</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#netshape.config.Command.add_node_prop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a property to nodes in the network</p>
+<p>Positional arguments:
+name &#8211; the name of the property to be added
+func &#8211; a function which accepts a netshape object as the first</p>
+<blockquote>
+<div>argument, the name of the property as the second,
+and the command line arguments as the third,
+as well as any additional arguments,
+and returns a mapping from node ids to property values</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="netshape.config.Command.run_pipeline">
+<code class="descname">run_pipeline</code><span class="sig-paren">(</span><em>cl_args</em><span class="sig-paren">)</span><a class="headerlink" href="#netshape.config.Command.run_pipeline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Executes the pipeline</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="netshape.config.Config">
+<em class="property">class </em><code class="descclassname">netshape.config.</code><code class="descname">Config</code><a class="headerlink" href="#netshape.config.Config" title="Permalink to this definition">¶</a></dt>
+<dd><p>docstring for Config</p>
+<dl class="method">
+<dt id="netshape.config.Config.register_command">
+<code class="descname">register_command</code><span class="sig-paren">(</span><em>command_name</em>, <em>help=None</em>, <em>command_args=None</em><span class="sig-paren">)</span><a class="headerlink" href="#netshape.config.Config.register_command" title="Permalink to this definition">¶</a></dt>
+<dd><p>Registers a subcommand and returns a command object which can</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="netshape-node-props">
+<h2><code class="docutils literal"><span class="pre">netshape.node_props</span></code><a class="headerlink" href="#netshape-node-props" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-netshape.node_props"></span><dl class="function">
+<dt id="netshape.node_props.eigenvector_centrality">
+<code class="descclassname">netshape.node_props.</code><code class="descname">eigenvector_centrality</code><span class="sig-paren">(</span><em>ns</em>, <em>name</em>, <em>_</em><span class="sig-paren">)</span><a class="headerlink" href="#netshape.node_props.eigenvector_centrality" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes eigenvector centrality for all nodes</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="netshape.node_props.modularity_community">
+<code class="descclassname">netshape.node_props.</code><code class="descname">modularity_community</code><span class="sig-paren">(</span><em>ns</em>, <em>name</em>, <em>_</em><span class="sig-paren">)</span><a class="headerlink" href="#netshape.node_props.modularity_community" title="Permalink to this definition">¶</a></dt>
+<dd><p>Community detection</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Netshape</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Python API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-netshape.main"><code class="docutils literal"><span class="pre">netshape.main</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-netshape.config"><code class="docutils literal"><span class="pre">netshape.config</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#netshape-node-props"><code class="docutils literal"><span class="pre">netshape.node_props</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Matthew Smith.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.8</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/api.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

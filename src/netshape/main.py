@@ -1,4 +1,5 @@
-"""The main netshape module"""
+"""The main netshape module which contains the Netshape graph representation
+class"""
 import csv
 import json
 import shutil
@@ -14,7 +15,21 @@ PATH = os.path.abspath(__file__)
 DIR_PREFIX = os.path.dirname(PATH)
 
 class Netshape(object):
-    """ The netshape class which """
+    """ The netshape class. Netshape objects maintain the network state through
+        two primary attributes:
+
+        :code:`self.json_graph`
+            The JSON representation of the graph, which maintains nodes and
+            links as lists of dicts. This is what is eventually written to the
+            data file used for the web UI.
+
+             :code:`self.json_graph = {'nodes': [], 'links':[]}`
+
+        :code:`self.g`
+            a networkx representation of the network. This is useful for computation
+            of network statistics.
+
+    """
     def __init__(self):
         super(Netshape, self).__init__()
         self.json_graph = {'nodes': [], 'links':[]}
@@ -23,16 +38,25 @@ class Netshape(object):
         self.g = nx.Graph()
 
     def from_edgelist(self, edgelist, sep=",", directed=True):
-        """Reads a super csv formatted edgelist and adds nodes and edges to the
-           network accordingly.
+        """Reads a csv formatted edgelist and adds nodes and edges to the
+           network accordingly. If there is a header, the columns labeled 'source',
+           and 'target' will be used as node ID's, and any other columns, edge attributes.
+           Otherwise, the first two columns will be used as node ID's.
 
-            Positional arguments:
-            -----------------
-            edgelist -- the file to be opened
+           *Positional arguments:*
+                .. option:: edgelist
 
-            Keyword arguments:
-            sep -- the delimiter string in the csv (default: ",")
-            directed -- boolean indicating true if the graph is directed (default: True)
+                    the file to be opened
+
+           *Keyword arguments:*
+
+                .. option:: sep
+
+                    the delimiter string in the csv (default: " , ")
+
+                .. option:: directed
+
+                    boolean indicating true if the graph is directed (default: True)
         """
         try:
             reader = csv.reader(edgelist, delimiter=sep)
@@ -65,7 +89,8 @@ class Netshape(object):
             edgelist.close()
 
     def _generate_graph(self, directed=True):
-        """Builds a networkx graph from the provided edgelies"""
+        """Builds a networkx graph from the existing json_graph"""
+
         if directed:
             graph = nx.DiGraph()
         else:
@@ -75,7 +100,7 @@ class Netshape(object):
         self.g = graph
         return self
 
-    def write_node_props(self, proplist, sep=",", file=False, header=True):
+    def _write_node_props(self, proplist, sep=",", file=False, header=True):
         """Writes csv formatted node property list
         Positional arguments:
         proplist -- the list of attribute names to write
@@ -119,10 +144,16 @@ class Netshape(object):
 
     def add_node_prop(self, prop, prop_map):
         """Adds a node property to the json_graph
+        *Positional arguments:*
+            .. option:: prop
 
-        Positional arguments:
-        prop     -- the name of the property to add
-        prop_map -- a map from nodes to the property being added
+                The name of the property to add
+
+            .. option:: prop_map
+
+                A mapping from node ID's to property values
+
+
         """
         self.node_props.append(prop)
         for i in range(len(self.json_graph["nodes"])):

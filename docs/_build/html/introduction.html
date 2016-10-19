@@ -1,0 +1,193 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Introduction &#8212; Netshape 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="Netshape 0.1 documentation" href="index.html" />
+    <link rel="next" title="Configuration" href="configuration.html" />
+    <link rel="prev" title="Overview" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p><code class="code docutils literal"><span class="pre">netshape</span></code> is a command-line that is designed to help scaffold browser-based
+network visualizations, so that they can be shared with others in an interactive manner while still remaining lightweight. Often it is useful to zoom and pan around a network in order to get a sense of
+particular details that any static image could not capture. <code class="code docutils literal"><span class="pre">netshape</span></code> is
+the solution to that problem.</p>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>See: <a class="reference internal" href="index.html"><span class="doc">Overview</span></a> for installation instructions.</p>
+</div>
+<div class="section" id="default-usage">
+<h2>Default Usage<a class="headerlink" href="#default-usage" title="Permalink to this headline">¶</a></h2>
+<p>By default, <code class="code docutils literal"><span class="pre">netshape</span></code> offers two subcommands, though it can be easily extended
+to include more.</p>
+<dl class="docutils">
+<dt><code class="code docutils literal"><span class="pre">netshape</span> <span class="pre">build</span></code></dt>
+<dd><p class="first">accepts as arguments the name of a csv-formatted edgelist file (JSON network option coming soon), or a csv-formatted edgelist from <code class="code docutils literal"><span class="pre">stdin</span></code>, as well as some optional parameters.
+The eigenvector centrality, degree, and a modularity maximizing community assignment is then computed for all nodes.
+A json representation of this network is then used alongside the d3.js library to build a
+visualization of the network in the browser, by default in a subfolder named &#8216;dist&#8217; which can be coloured according
+to the statistics that were computed earlier.</p>
+<p><strong>Arguments</strong></p>
+<blockquote class="last">
+<div><dl class="option">
+<dt id="cmdoption-arg-network">
+<code class="descname">network</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-arg-network" title="Permalink to this definition">¶</a></dt>
+<dd><p>The csv formatted edgelist representing the network to be visualized. Also accepts from <code class="code docutils literal"><span class="pre">stdin</span></code></p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-h">
+<span id="cmdoption--help"></span><code class="descname">-h</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--help</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-h" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displays a help message.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-s">
+<span id="cmdoption--seps"></span><code class="descname">-s</code><code class="descclassname"> SEP</code><code class="descclassname">, </code><code class="descname">--seps</code><code class="descclassname"> SEP</code><a class="headerlink" href="#cmdoption-s" title="Permalink to this definition">¶</a></dt>
+<dd><p>the string delimiter between values in the edgelist (default: &#8221;,&#8221;)</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-d">
+<span id="cmdoption--directed"></span><code class="descname">-d</code><code class="descclassname"> DIRECTED</code><code class="descclassname">, </code><code class="descname">--directed</code><code class="descclassname"> DIRECTED</code><a class="headerlink" href="#cmdoption-d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Boolean indicator - true if the graph is directed (default: True)</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-o">
+<span id="cmdoption--out"></span><code class="descname">-o</code><code class="descclassname"> OUT</code><code class="descclassname">, </code><code class="descname">--out</code><code class="descclassname"> OUT</code><a class="headerlink" href="#cmdoption-o" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the file to build the web visualization in (default: &#8220;dist&#8221;)</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-n">
+<span id="cmdoption--name"></span><code class="descname">-n</code><code class="descclassname"> NAME</code><code class="descclassname">, </code><code class="descname">--name</code><code class="descclassname"> NAME</code><a class="headerlink" href="#cmdoption-n" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the visualization in that appears in the browser UI (default: &#8220;Network&#8221;)</p>
+</dd></dl>
+
+</div></blockquote>
+</dd>
+<dt><code class="code docutils literal"><span class="pre">netshape</span> <span class="pre">serve</span></code></dt>
+<dd><p class="first">a utility function that serves the web visualization on a localhost server (port 8000 by default)</p>
+<p><strong>Arguments</strong></p>
+<blockquote class="last">
+<div><dl class="option">
+<dt id="cmdoption-p">
+<span id="cmdoption--port"></span><code class="descname">-p</code><code class="descclassname"> PORT</code><code class="descclassname">, </code><code class="descname">--port</code><code class="descclassname"> PORT</code><a class="headerlink" href="#cmdoption-p" title="Permalink to this definition">¶</a></dt>
+<dd><p>The port to serve on.</p>
+</dd></dl>
+
+</div></blockquote>
+</dd>
+</dl>
+</div>
+<div class="section" id="web-interface">
+<h2>Web Interface<a class="headerlink" href="#web-interface" title="Permalink to this headline">¶</a></h2>
+<p>Below is a sample view of the default web interface for the visualization.
+The particular network is a <em>C. Elegans</em> neural connectome.</p>
+<img alt="_images/netshape.png" src="_images/netshape.png" />
+<p>There are options on the right side to colour the network according to
+the various network statistics that were computed before it was built, as well as choose between discrete and continuous colour schemes. It is also possible to
+zoom and pan the view of the network. When the mouse hovers over a node, that node&#8217;s ID
+will appear above the node. Nodes are arranged according to a force-directed layout, but can be dragged
+interactively by clicking and dragging with the mouse.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Netshape</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Overview</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#default-usage">Default Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#web-interface">Web Interface</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Matthew Smith.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.8</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/introduction.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
