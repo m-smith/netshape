@@ -1,8 +1,17 @@
 """Utility classes and functions"""
-class Singleton(type):
-    """Metaclass singleton as written in Learning Python Design Patterns (Giridhar)"""
-    _instances = {}
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
-        return cls._instances[cls]
+
+def serve(ns, _, arg, *args, **kwargs):
+    """Utility"""
+    try:
+        import http.server
+        shs = http.server.SimpleHTTPRequestHandler
+        import socketserver as ss
+    except ImportError:
+        from SimpleHTTPServer import SimpleHTTPRequestHandler as shs
+        import SocketServer as ss
+    port = arg["p"]
+    handler = shs
+    httpd = ss.TCPServer(("", port), handler)
+    print("serving at port", port)
+    print("type ^C to exit")
+    httpd.serve_forever()

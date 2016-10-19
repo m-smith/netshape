@@ -14,19 +14,20 @@ PATH = os.path.abspath(__file__)
 DIR_PREFIX = os.path.dirname(PATH)
 
 class Netshape(object):
-    """docstring for Netshape"""
+    """ The netshape class which """
     def __init__(self):
         super(Netshape, self).__init__()
         self.json_graph = {'nodes': [], 'links':[]}
         self.node_props = []
         self.edge_props = []
-        self.g = None
+        self.g = nx.Graph()
 
     def from_edgelist(self, edgelist, sep=",", directed=True):
-        """Reads an csv formatted edgelist and adds nodes and edges to the
+        """Reads a super csv formatted edgelist and adds nodes and edges to the
            network accordingly.
 
             Positional arguments:
+            -----------------
             edgelist -- the file to be opened
 
             Keyword arguments:
@@ -52,13 +53,13 @@ class Netshape(object):
             edges = [dict([('source', str(i[source])), ('target', str(i[target]))]
                           + list(zip(other_heads, [i[j] for j in other_vals]))) for i in reader]
             nodes = np.unique([(i[source], i[target]) for i in reader])
-            old_nodes = [self.json_graph["nodes"][i]["id"] for i in self.json_graph["nodes"]]
+            old_nodes = [i["id"] for i in self.json_graph["nodes"]]
             nodes = [{'id':i} for i in nodes if i not in old_nodes]
             self.json_graph = {
                 'nodes': self.json_graph['nodes'] + nodes,
-                'links':edges}
+                'links': self.json_graph['links'] + edges}
             self.node_props = self.node_props
-            self.edge_props = np.unique(self.edge_props + other_heads)
+            self.edge_props = list(np.unique(self.edge_props + other_heads))
             self._generate_graph(directed)
         finally:
             edgelist.close()
@@ -97,8 +98,13 @@ class Netshape(object):
     def build_visualization(self, out="dist", title="Network"):
         """Scaffolds the visualization project into a directory named dist"""
         try:
+            FileNotFoundError
+        except NameError:
+            FileNotFoundError = OSError
+
+        try:
             shutil.rmtree(out)
-        except FileNotFoundError:
+        except OSError:
             pass
         os.makedirs("./"+ out +"/data")
         datapath = "data" + ".json"

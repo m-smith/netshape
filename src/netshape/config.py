@@ -1,4 +1,6 @@
 """ Module for writing netshape-config.py files"""
+from __future__ import print_function
+
 import argparse
 import sys
 import select
@@ -6,6 +8,7 @@ import select
 from .main import Netshape
 from .defaults import build_args
 from . import node_props
+from .utils import serve
 
 ns = Netshape()
 
@@ -30,10 +33,11 @@ class Config(object):
         for i in command_args:
             if not i:
                 continue
+            print(i)
             name = i["name"]
             del i["name"]
             subparser.add_argument(*name, **i)
-        subparser.set_defaults(func=self.commands[command_name].exec)
+        subparser.set_defaults(func=self.commands[command_name].run_pipeline)
         return self.commands[command_name]
 
 
@@ -68,7 +72,7 @@ class Command(object):
         self.pipeline.append((name, func, (args, kwargs)))
         return self
 
-    def exec(self, cl_args):
+    def run_pipeline(self, cl_args):
         """Executes the pipeline"""
         for (name, func, args) in self.pipeline:
             if args:
@@ -94,4 +98,13 @@ conf = Config()
  .add_node_prop('Eigenvector Centrality', node_props.eigenvector_centrality)
  .add_node_prop('Community', node_props.modularity_community)
  .add_node_prop('Degree', node_props.degree)
+)
+(conf
+ .register_command('serve', help="utility function to view a network visualization", command_args=[{
+        "name": ['-p', '--port'],
+        "dest": 'p',
+        "default":8000,
+        "help": "The port to serve on."
+  }])
+ .add_node_prop('', serve)
 )
