@@ -25,10 +25,14 @@ With :code:`netshape`, a network edgelist is turned into a web-ready interactive
 Netshape is also highly configurable and hackable; it supports custom commands,
 which enables the development of complex visualization pipelines.
 
-Dependencies
-~~~~~
+Key Features
+~~~~~~~~~~~~~~~~~
 
-Before installing, ensure that python is installed on your computer.
+Dependencies
+~~~~~~~~~~~~~~~~~
+
+Before installing, ensure that python is installed on your computer, and is at
+least version 2.7.
 
 Installation
 ~~~~~
