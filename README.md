@@ -1,5 +1,4 @@
-# Netshape [![Build Status](https://travis-ci.org/m-smith/netshape.svg?branch=master)](https://travis-ci.org/m-smith/netshape)
-
+# Netshape [![Build Status](https://travis-ci.org/m-smith/netshape.svg?branch=master)](https://travis-ci.org/m-smith/netshape)  [![Docs Status](https://readthedocs.org/projects/netshape/badge/?version=latest)](http://netshape.readthedocs.io/en/latest/)
 
 `netshape` is a versatile tool designed to build interactive, browser-based,
 and deployable visualizations of networks. This enables a more collaborative and more informative visualization process.
